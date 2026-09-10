@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.lyne.annexe1"
+    namespace = "com.decinfo.annexe0"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.lyne.annexe1"
+        applicationId = "com.decinfo.annexe0"
         minSdk = 28
         targetSdk = 36
         versionCode = 1

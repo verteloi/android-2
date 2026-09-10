@@ -5,40 +5,43 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AjouterActivity">
+    android:orientation="vertical"
+    tools:context=".ListerActivity2">
 
     <EditText
-        android:id="@+id/addText"
-        android:layout_width="match_parent"
+        android:id="@+id/memo"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
         android:ems="10"
-        android:hint="Écrire un mémo"
+        android:hint="Ecrire votre mémo"
         android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.22"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <Button
-        android:id="@+id/onAdd"
-        android:layout_width="wrap_content"
+        android:id="@+id/button4"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="160dp"
-        android:backgroundTint="#1083e5"
-        android:text="ajouter"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.529"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginStart="160dp"
+        android:layout_marginTop="404dp"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/space" />
 
     <Button
         android:id="@+id/echeance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="228dp"
+        android:layout_marginStart="216dp"
+        android:layout_marginTop="224dp"
         android:text="echeance"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.869"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,12 +49,8 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="236dp"
-        android:hint="Date"
-        android:text="Date"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/echeance"
-        app:layout_constraintHorizontal_bias="0.15"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="232dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
