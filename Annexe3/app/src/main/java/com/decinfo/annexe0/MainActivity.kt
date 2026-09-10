@@ -1,9 +1,12 @@
 package com.decinfo.annexe0
 
 import android.content.Intent
+import android.health.connect.datatypes.units.Length
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
+import android.widget.Toast.LENGTH_LONG
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -40,7 +43,11 @@ class MainActivity : AppCompatActivity() {
         //buttonQuitter.setOnclickListener{finish()}
         //pourquoi il n'y a plus de parenthese ? à cause de la règle du "lambda trailing"
 
-
+        try {
+            SingletonSimle.deserializerListe(applicationContext)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Bienvenue c'est votre 1ère utilisation", LENGTH_LONG)
+        }
     }
 
     inner class Ecouteur : View.OnClickListener{

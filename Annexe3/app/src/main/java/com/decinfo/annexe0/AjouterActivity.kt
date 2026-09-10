@@ -51,4 +51,14 @@ class AjouterActivity : AppCompatActivity() {
 
     //interface fonctionnelle -> classe qui possède une methode dedans
     }
+
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            SingletonSimle.serializerListe(applicationContext) // pluto que this pcq notre singleton est visible dans toute l'application
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }
