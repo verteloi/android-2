@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.klaxon)
     implementation(libs.volley)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
