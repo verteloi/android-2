@@ -17,7 +17,7 @@
             android:name=".EcouterChanson"
             android:exported="false" />
         <activity
-            android:name=".ListeChansons"
+            android:name=".ListeChansonsAffichage"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

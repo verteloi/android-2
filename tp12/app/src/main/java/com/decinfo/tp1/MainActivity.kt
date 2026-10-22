@@ -2,18 +2,12 @@ package com.decinfo.tp1
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
-import com.android.volley.Request
-import com.android.volley.toolbox.StringRequest
 
 class MainActivity : AppCompatActivity() {
 
@@ -50,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     {
         override fun onClick(v: View?) {
             if (v == bouton1){
-                val i = Intent(this@MainActivity, ListeChansons::class.java)
+                val i = Intent(this@MainActivity, ListeChansonsAffichage::class.java)
                 startActivity(i)
             } else {
                 finish()
