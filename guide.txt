@@ -1,0 +1,37 @@
+Annexe 1 :
+- Plusieurs Activity
+- Lire et écrire dans .txt [1b]
+
+Annexe 2 :
+- Accéder éléments sur telephone (fichier mp3)
+- Buffer (utilise ram)
+- stockage étendu
+- Boomerang (activité à stockage telephone à activité)
+
+Annexe 3 :
+- Singleton
+- Sérialisation
+- DatePicker
+- cycle de vie d'une activité
+
+Annexe 4
+- Boomerang (activité A to B to A)
+- Sérialisation
+- Tourner téléphone
+- nullabilité (4B)
+- Parcelable (4C)
+
+Annexe 5 :
+- Simple Adapter (listView plus complexe)
+- any
+- HashMap
+
+Annexe 6 :
+- Boomerang (activité à stockage à activité)
+- Image
+
+Atelier 1 :
+- Lire texte Json a partir d'une url
+
+Atelier 2 :
+- Lire video a partir d'une url

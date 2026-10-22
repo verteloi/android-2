@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class ListeChansonsAffichage : AppCompatActivity() {
+class ListeChansonsAffichage : AppCompatActivity(), Observateur {
     lateinit var liste: ListView
     lateinit var modele: Modele
 
@@ -24,13 +24,14 @@ class ListeChansonsAffichage : AppCompatActivity() {
         }
 
         modele = Modele()
-
         liste = findViewById(R.id.listeChansons)
 
-        val adapteur = BetterSimpleAdapter(this, modele.remplirArrayList(), R.layout.un_item, arrayOf("position", "nom", "date", "image"), intArrayOf(R.id.textePosition, R.id.texteTitre, R.id.texteDate, R.id.imageAlbum))
+    }
 
+    override fun listePrete() {
+        val adapteur = BetterSimpleAdapter(this, modele.v, R.layout.un_item, arrayOf("trackName", "artistName", "artworkUrl100"), intArrayOf(R.id.trackName, R.id.artistName,R.id.artworkUrl100))
         liste.adapter = adapteur
+        liste.setOnItemClickListener{_,_,position,_ -> Toast.makeText(this, modele.v.get(position).get("nom").toString(), LENGTH_LONG).show()}
 
-        liste.setOnItemClickListener{_,_,position,_ -> Toast.makeText(this, modele.remplirArrayList().get(position).get("nom").toString(), LENGTH_LONG).show()}
     }
 }
