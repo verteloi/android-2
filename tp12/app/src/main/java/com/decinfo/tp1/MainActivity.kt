@@ -1,6 +1,9 @@
 package com.decinfo.tp1
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -10,8 +13,14 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 
 class MainActivity : AppCompatActivity() {
-    lateinit var vue: PlayerView
-    var player: ExoPlayer?= null
+
+    //nullabilité : on ne peut plus faire de nullpointerexception
+    //donc une variable ne peut être nulle
+    //var valeur modifiable, val valeur immuable (constante)
+
+    lateinit var bouton1: Button
+    lateinit var bouton2: Button
+    lateinit var bouton3: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,20 +31,27 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        vue = findViewById(R.id.vue)
 
-        player = ExoPlayer.Builder(this).build()
-        vue.setUseController(false);
+        bouton1 = findViewById(R.id.bouton1)
+        bouton2 = findViewById(R.id.bouton2)
+        bouton3 = findViewById(R.id.bouton3)
+
+        val ec = Ecouteur()
+
+        bouton1.setOnClickListener(ec)
+        bouton2.setOnClickListener(ec)
+        bouton3.setOnClickListener(ec)
 
     }
-
-    override fun onStart() {
-        super.onStart()
-        vue.player = player
-        val mp3url = "https://ericlabonte.com/Goéland - Marie-Annick Lepine.mp3"
-        val mediaItem = MediaItem.fromUri(mp3url)
-        player?.addMediaItem(mediaItem)
-        player?.prepare()
-        player?.play()
+    inner class Ecouteur : View.OnClickListener
+    {
+        override fun onClick(v: View?) {
+            if (v == bouton1){
+                val i = Intent(this@MainActivity, ListeChansons::class.java)
+                startActivity(i)
+            } else {
+                finish()
+            }
+        }
     }
 }
