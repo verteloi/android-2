@@ -26,7 +26,7 @@ class ListeChansons : AppCompatActivity() {
 
         liste = findViewById(R.id.listeChansons)
 
-        val adapteur = SimpleAdapter(this, remplirArrayList(), R.layout.un_item, arrayOf("position", "nom", "date", "image"), intArrayOf(R.id.textePosition, R.id.texteTitre, R.id.texteDate, R.id.imageAlbum))
+        val adapteur = BetterSimpleAdapter(this, remplirArrayList(), R.layout.un_item, arrayOf("position", "nom", "date", "image"), intArrayOf(R.id.textePosition, R.id.texteTitre, R.id.texteDate, R.id.imageAlbum))
 
         liste.adapter = adapteur
 
@@ -39,7 +39,7 @@ class ListeChansons : AppCompatActivity() {
         h.put("position", 3)
         h.put("nom", "Touch Me")
         h.put("date", "22/03/86")
-        h.put("image", R.drawable.touchme)
+        h.put("image", "https://www.cvm.qc.ca/wp-content/uploads/mycelium_EVENEMENT.jpg")
 
         v.add(h)
 
