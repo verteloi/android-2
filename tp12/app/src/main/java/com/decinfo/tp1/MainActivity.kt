@@ -2,6 +2,7 @@ package com.decinfo.tp1
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -11,6 +12,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
 
 class MainActivity : AppCompatActivity() {
 
