@@ -10,11 +10,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
-
-    //nullabilité : on ne peut plus faire de nullpointerexception
-    //donc une variable ne peut être nulle
-    //var valeur modifiable, val valeur immuable (constante)
-
     lateinit var bouton1: Button
     lateinit var bouton2: Button
     lateinit var bouton3: Button
@@ -38,15 +33,24 @@ class MainActivity : AppCompatActivity() {
         bouton1.setOnClickListener(ec)
         bouton2.setOnClickListener(ec)
         bouton3.setOnClickListener(ec)
-
     }
     inner class Ecouteur : View.OnClickListener
     {
         override fun onClick(v: View?) {
             if (v == bouton1){
                 val i = Intent(this@MainActivity, ListeChansonsAffichage::class.java)
+                i.putExtra("choix", 1)
                 startActivity(i)
-            } else {
+            } else if (v == bouton2){
+                val i = Intent(this@MainActivity, ListeChansonsAffichage::class.java)
+                i.putExtra("choix", 2)
+                startActivity(i)
+            } else if (v == bouton3){
+                val i = Intent(this@MainActivity, ListeChansonsAffichage::class.java)
+                i.putExtra("choix", 3)
+                startActivity(i)
+            }
+            else {
                 finish()
             }
         }

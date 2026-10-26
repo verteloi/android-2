@@ -20,16 +20,21 @@ import org.json.JSONArray
 class Modele() {
     val v = ArrayList<HashMap<String, Any>>()
     var listeChansons = ListeChansons()
+    var artisteSelectionne = ""
 
-    // doit etre appeler au moment que l'utilisateur selectionne artiste
-    fun getListeChansons(c: Context, observateur: Observateur) {
+    fun getListeChansons(c: Context, observateur: Observateur, choix: Int) {
         val queue = Volley.newRequestQueue(c)
-        val artiste1 = "https://itunes.apple.com/search?term=kanye&media=music"
-        val artiste2 = "https://itunes.apple.com/search?term=drake&media=music"
-        val artiste3 = "https://itunes.apple.com/search?term=nirvana&media=music"
+        val artiste1 = "https://itunes.apple.com/search?term=bbpue&media=music"
+        val artiste2 = "https://itunes.apple.com/search?term=meltawaylikematter&media=music"
+        val artiste3 = "https://itunes.apple.com/search?term=miles+nelson&media=music"
 
-        // changer artisteSelectionne pour l'artiste cliqué
-        var artisteSelectionne = artiste1
+        if (choix == 1) {
+            artisteSelectionne = artiste1
+        } else if (choix == 2) {
+            artisteSelectionne = artiste2
+        } else {
+            artisteSelectionne = artiste3
+        }
 
         val stringRequest = StringRequest(Request.Method.GET, artisteSelectionne,
             { reponse -> decomposerReponse(reponse, observateur)},
@@ -51,7 +56,6 @@ class Modele() {
 
             v.add(temp)
         }
-
         observateur.listePrete()
     }
 }
