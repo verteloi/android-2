@@ -37,6 +37,7 @@ class ListeChansonsAffichage : AppCompatActivity(), Observateur {
         liste.setOnItemClickListener{_,_,position,_ ->
             val i = Intent(this@ListeChansonsAffichage, EcouterChanson::class.java)
             i.putExtra("chansonChoisi", modele.v.get(position).get("previewUrl").toString())
+            i.putExtra("imageChansonChoisi", modele.v.get(position).get("artworkUrl100").toString())
             startActivity(i)
         }
     }
