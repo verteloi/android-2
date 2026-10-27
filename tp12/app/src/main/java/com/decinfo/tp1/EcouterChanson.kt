@@ -1,30 +1,33 @@
 package com.decinfo.tp1
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.os.CountDownTimer
 import android.view.View
 import android.widget.ImageView
+import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import kotlin.math.log
+import com.bumptech.glide.Glide
+
 
 class EcouterChanson : AppCompatActivity() {
     lateinit var vue: PlayerView
     var player: ExoPlayer?= null
-    lateinit var mp3url: String
     lateinit var mediaItem: MediaItem
+    lateinit var coverUrl: String
     lateinit var songImage: ImageView
     lateinit var pausePlayButton: ImageView
     lateinit var skipSongButton: ImageView
     lateinit var skip10Button: ImageView
     lateinit var back10Button: ImageView
     lateinit var backSongButton: ImageView
+    lateinit var seekBar: SeekBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +40,7 @@ class EcouterChanson : AppCompatActivity() {
         }
 
         songImage = findViewById(R.id.songImage)
+        seekBar = findViewById(R.id.seekBar)
 
         pausePlayButton = findViewById(R.id.pausePlayButton)
         skip10Button = findViewById(R.id.skip10Button)
@@ -52,15 +56,25 @@ class EcouterChanson : AppCompatActivity() {
         backSongButton.setOnClickListener(ec)
         back10Button.setOnClickListener(ec)
 
+        var position: Int = intent.getIntExtra("chansonChoisi", 0)
 
-        mp3url = intent.getStringExtra("chansonChoisi")!!
-        mediaItem = MediaItem.fromUri(mp3url)
+        mediaItem = MediaItem.fromUri(Modele.v.get(position).get("previewUrl").toString())
+        coverUrl = MediaItem.fromUri(Modele.v.get(position).get("artworkUrl100").toString()).toString()
+
+        Glide.with(this)
+            .load(coverUrl)
+            .into(songImage)
 
         vue = findViewById(R.id.vue)
 
         player = ExoPlayer.Builder(this).build()
         // vue.setUseController(false);
 
+        val m = MonTimer()
+        seekBar.max = 30
+        seekBar.progress = 0
+
+        m.start()
     }
 
     override fun onStart() {
@@ -68,6 +82,17 @@ class EcouterChanson : AppCompatActivity() {
         vue.player = player
         player?.addMediaItem(mediaItem)
         player?.prepare()
+
+        player?.addListener(object : Player.Listener {
+            override fun onMediaItemTransition(mediaItem: MediaItem?, @Player.MediaItemTransitionReason reason: Int) {
+
+            }
+
+            override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
+
+            }
+        })
+
         player?.play()
     }
 
@@ -75,6 +100,7 @@ class EcouterChanson : AppCompatActivity() {
     {
         override fun onClick(v: View?) {
             if (v == pausePlayButton){
+                player!!.pause()
 
             } else if (v == backSongButton){
 
@@ -89,4 +115,15 @@ class EcouterChanson : AppCompatActivity() {
             }
         }
     }
+
+    inner class MonTimer : CountDownTimer(30000, 200) {
+        override fun onTick(mili: Long) {
+            seekBar.progress = (player!!.currentPosition / 1000).toInt()
+        }
+
+        override fun onFinish() {
+            seekBar.progress = 30
+        }
+    }
 }
+

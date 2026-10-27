@@ -13,7 +13,6 @@ import androidx.core.view.WindowInsetsCompat
 
 class ListeChansonsAffichage : AppCompatActivity(), Observateur {
     lateinit var liste: ListView
-    lateinit var modele: Modele
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,18 +25,16 @@ class ListeChansonsAffichage : AppCompatActivity(), Observateur {
         }
         val choix = intent.getIntExtra("choix", 0)
 
-        modele = Modele()
-        modele.getListeChansons(this, this, choix)
+        Modele.getListeChansons(this, this, choix)
         liste = findViewById(R.id.listeChansons)
     }
 
     override fun listePrete() {
-        val adapteur = BetterSimpleAdapter(this, modele.v, R.layout.un_item, arrayOf("trackName", "artistName", "artworkUrl100"), intArrayOf(R.id.trackName, R.id.artistName,R.id.artworkUrl100))
+        val adapteur = BetterSimpleAdapter(this, Modele.v, R.layout.un_item, arrayOf("trackName", "artistName", "artworkUrl100"), intArrayOf(R.id.trackName, R.id.artistName,R.id.artworkUrl100))
         liste.adapter = adapteur
         liste.setOnItemClickListener{_,_,position,_ ->
             val i = Intent(this@ListeChansonsAffichage, EcouterChanson::class.java)
-            i.putExtra("chansonChoisi", modele.v.get(position).get("previewUrl").toString())
-            i.putExtra("imageChansonChoisi", modele.v.get(position).get("artworkUrl100").toString())
+            i.putExtra("chansonChoisi", position)
             startActivity(i)
         }
     }

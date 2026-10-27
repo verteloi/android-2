@@ -17,16 +17,16 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.beust.klaxon.Klaxon
 import org.json.JSONArray
 
-class Modele() {
+object Modele {
     val v = ArrayList<HashMap<String, Any>>()
     var listeChansons = ListeChansons()
     var artisteSelectionne = ""
 
     fun getListeChansons(c: Context, observateur: Observateur, choix: Int) {
         val queue = Volley.newRequestQueue(c)
-        val artiste1 = "https://itunes.apple.com/search?term=bbpue&media=music"
-        val artiste2 = "https://itunes.apple.com/search?term=meltawaylikematter&media=music"
-        val artiste3 = "https://itunes.apple.com/search?term=miles+nelson&media=music"
+        val artiste1 = "https://itunes.apple.com/lookup?id=1702217937&entity=song"
+        val artiste2 = "https://itunes.apple.com/lookup?id=1767190209&entity=song"
+        val artiste3 = "https://itunes.apple.com/lookup?id=1867363737&entity=song"
 
         if (choix == 1) {
             artisteSelectionne = artiste1
