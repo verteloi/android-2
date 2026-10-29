@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.BoolRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -27,7 +28,11 @@ class EcouterChanson : AppCompatActivity() {
     lateinit var skip10Button: ImageView
     lateinit var back10Button: ImageView
     lateinit var backSongButton: ImageView
+    var position:  Int = 0
     lateinit var seekBar: SeekBar
+    var pauseBool: Boolean = true
+    var m: MonTimer? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,10 +61,10 @@ class EcouterChanson : AppCompatActivity() {
         backSongButton.setOnClickListener(ec)
         back10Button.setOnClickListener(ec)
 
-        var position: Int = intent.getIntExtra("chansonChoisi", 0)
+        position = intent.getIntExtra("chansonChoisi", 0)
 
         mediaItem = MediaItem.fromUri(Modele.v.get(position).get("previewUrl").toString())
-        coverUrl = MediaItem.fromUri(Modele.v.get(position).get("artworkUrl100").toString()).toString()
+        coverUrl = Modele.v.get(position).get("artworkUrl100").toString()
 
         Glide.with(this)
             .load(coverUrl)
@@ -70,11 +75,6 @@ class EcouterChanson : AppCompatActivity() {
         player = ExoPlayer.Builder(this).build()
         // vue.setUseController(false);
 
-        val m = MonTimer()
-        seekBar.max = 30
-        seekBar.progress = 0
-
-        m.start()
     }
 
     override fun onStart() {
@@ -94,35 +94,116 @@ class EcouterChanson : AppCompatActivity() {
         })
 
         player?.play()
+        pausePlayButton.setImageResource(R.drawable.pause)
+
+        seekBar.max = 30000
+        seekBar.progress = 0
+
+        m = MonTimer(30000)
+
+        m?.start()
     }
 
     inner class Ecouteur : View.OnClickListener
     {
         override fun onClick(v: View?) {
             if (v == pausePlayButton){
-                player!!.pause()
+                if (pauseBool) {
+                    player!!.pause()
+                    pauseBool = false
+
+                    m?.cancel()
+
+                    pausePlayButton.setImageResource(R.drawable.play)
+                }
+                else {
+                    player?.play()
+                    pauseBool = true
+
+                    val tempsRestant = 30000 - player!!.currentPosition
+                    m = MonTimer(tempsRestant)
+                    m?.start()
+
+                    pausePlayButton.setImageResource(R.drawable.pause)
+                }
 
             } else if (v == backSongButton){
 
-            }  else if (v == back10Button){
+                position--
+                if (position == 0) {
+                    position = Modele.v.size - 1
+                }
 
-            } else if (v == skip10Button){
+                player?.stop()
+                player?.clearMediaItems()
+                mediaItem = MediaItem.fromUri(Modele.v[position]["previewUrl"].toString())
+                player?.addMediaItem(mediaItem)
+                player?.prepare()
+                player?.play()
 
-            } else if (v == skipSongButton){
+                Glide.with(this@EcouterChanson)
+                    .load(Modele.v[position]["artworkUrl100"].toString())
+                    .into(songImage)
 
+                pauseBool = true
+                pausePlayButton.setImageResource(R.drawable.pause)
+
+                m?.cancel()
+                seekBar.progress = 0
+                m = MonTimer(30000)
+                m?.start()
+
+            } else if (v == back10Button) {
+                seekBar.progress -= 10000
+                seekBar.progress = if (seekBar.progress > 0) seekBar.progress else 0
+
+                if (player!!.currentPosition < 10000) {
+                    player!!.seekTo(0)
+                } else {
+                    player!!.seekTo(player!!.currentPosition-10000)
+                }
+
+            } else if (v == skip10Button) {
+                player!!.seekTo(player!!.currentPosition+10000)
+                seekBar.progress = player!!.currentPosition.toInt()
+
+            } else if (v == skipSongButton) {
+                position++
+                if (position > Modele.v.size) {
+                    position = 0
+                }
+
+                player?.stop()
+                player?.clearMediaItems()
+                mediaItem = MediaItem.fromUri(Modele.v[position]["previewUrl"].toString())
+                player?.addMediaItem(mediaItem)
+                player?.prepare()
+                player?.play()
+
+                Glide.with(this@EcouterChanson)
+                    .load(Modele.v[position]["artworkUrl100"].toString())
+                    .into(songImage)
+
+                pauseBool = true
+                pausePlayButton.setImageResource(R.drawable.pause)
+
+                m?.cancel()
+                seekBar.progress = 0
+                m = MonTimer(30000)
+                m?.start()
             } else {
                 finish()
             }
         }
     }
 
-    inner class MonTimer : CountDownTimer(30000, 200) {
+    inner class MonTimer(tempsRestant: Long) : CountDownTimer(tempsRestant, 50) {
         override fun onTick(mili: Long) {
-            seekBar.progress = (player!!.currentPosition / 1000).toInt()
+            seekBar.progress = (player!!.currentPosition).toInt()
         }
 
         override fun onFinish() {
-            seekBar.progress = 30
+            seekBar.progress = 30000
         }
     }
 }

@@ -62,7 +62,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="3"
-                app:srcCompat="@drawable/pauseplay" />
+                app:srcCompat="@drawable/play" />
 
             <ImageView
                 android:id="@+id/skip10Button"
