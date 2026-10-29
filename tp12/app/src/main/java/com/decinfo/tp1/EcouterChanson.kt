@@ -5,6 +5,7 @@ import android.os.CountDownTimer
 import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.BoolRes
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +17,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.bumptech.glide.Glide
 
-
 class EcouterChanson : AppCompatActivity() {
     lateinit var vue: PlayerView
     var player: ExoPlayer?= null
@@ -27,12 +27,13 @@ class EcouterChanson : AppCompatActivity() {
     lateinit var skipSongButton: ImageView
     lateinit var skip10Button: ImageView
     lateinit var back10Button: ImageView
+    lateinit var songNameText: TextView
+    lateinit var artistNameText: TextView
     lateinit var backSongButton: ImageView
     var position:  Int = 0
     lateinit var seekBar: SeekBar
     var pauseBool: Boolean = true
     var m: MonTimer? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +47,8 @@ class EcouterChanson : AppCompatActivity() {
 
         songImage = findViewById(R.id.songImage)
         seekBar = findViewById(R.id.seekBar)
+        songNameText = findViewById(R.id.songNameText)
+        artistNameText = findViewById(R.id.artistNameText)
 
         pausePlayButton = findViewById(R.id.pausePlayButton)
         skip10Button = findViewById(R.id.skip10Button)
@@ -70,11 +73,12 @@ class EcouterChanson : AppCompatActivity() {
             .load(coverUrl)
             .into(songImage)
 
+        songNameText.text = Modele.v[position]["trackName"].toString()
+        artistNameText.text = Modele.v[position]["artistName"].toString()
+
         vue = findViewById(R.id.vue)
 
         player = ExoPlayer.Builder(this).build()
-        // vue.setUseController(false);
-
     }
 
     override fun onStart() {
@@ -89,7 +93,35 @@ class EcouterChanson : AppCompatActivity() {
             }
 
             override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED) {
+                    position++
+                    if (position >= Modele.v.size) {
+                        position = 0
+                    }
 
+                    player?.stop()
+                    player?.clearMediaItems()
+                    mediaItem = MediaItem.fromUri(Modele.v[position]["previewUrl"].toString())
+                    player?.addMediaItem(mediaItem)
+                    player?.prepare()
+                    player?.play()
+
+                    Glide.with(this@EcouterChanson)
+                        .load(Modele.v[position]["artworkUrl100"].toString())
+                        .into(songImage)
+
+
+                    pauseBool = true
+                    pausePlayButton.setImageResource(R.drawable.pause)
+
+                    songNameText.text = Modele.v[position]["trackName"].toString()
+                    artistNameText.text = Modele.v[position]["artistName"].toString()
+
+                    m?.cancel()
+                    seekBar.progress = 0
+                    m = MonTimer(30000)
+                    m?.start()
+                }
             }
         })
 
@@ -100,7 +132,6 @@ class EcouterChanson : AppCompatActivity() {
         seekBar.progress = 0
 
         m = MonTimer(30000)
-
         m?.start()
     }
 
@@ -128,7 +159,6 @@ class EcouterChanson : AppCompatActivity() {
                 }
 
             } else if (v == backSongButton){
-
                 position--
                 if (position == 0) {
                     position = Modele.v.size - 1
@@ -147,6 +177,9 @@ class EcouterChanson : AppCompatActivity() {
 
                 pauseBool = true
                 pausePlayButton.setImageResource(R.drawable.pause)
+
+                songNameText.text = Modele.v[position]["trackName"].toString()
+                artistNameText.text = Modele.v[position]["artistName"].toString()
 
                 m?.cancel()
                 seekBar.progress = 0
@@ -184,6 +217,9 @@ class EcouterChanson : AppCompatActivity() {
                     .load(Modele.v[position]["artworkUrl100"].toString())
                     .into(songImage)
 
+                songNameText.text = Modele.v[position]["trackName"].toString()
+                artistNameText.text = Modele.v[position]["artistName"].toString()
+
                 pauseBool = true
                 pausePlayButton.setImageResource(R.drawable.pause)
 
@@ -201,7 +237,6 @@ class EcouterChanson : AppCompatActivity() {
         override fun onTick(mili: Long) {
             seekBar.progress = (player!!.currentPosition).toInt()
         }
-
         override fun onFinish() {
             seekBar.progress = 30000
         }
