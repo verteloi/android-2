@@ -2,13 +2,19 @@ package com.decinfo.tp1
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.BoolRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -18,6 +24,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.bumptech.glide.Glide
+import kotlin.jvm.java
 
 class EcouterChanson : AppCompatActivity() {
     lateinit var vue: PlayerView
@@ -33,11 +40,15 @@ class EcouterChanson : AppCompatActivity() {
     lateinit var artistNameText: TextView
     lateinit var timeText: TextView
     lateinit var credits: TextView
+    lateinit var volume: TextView
     lateinit var backSongButton: ImageView
     var position:  Int = 0
     lateinit var seekBar: SeekBar
     var pauseBool: Boolean = true
     var m: MonTimer? = null
+    lateinit var lanceur: ActivityResultLauncher<Intent>
+    var volumePerm: Float = 0.5f
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +65,7 @@ class EcouterChanson : AppCompatActivity() {
         songNameText = findViewById(R.id.songNameText)
         artistNameText = findViewById(R.id.artistNameText)
         credits = findViewById(R.id.credits)
+        volume = findViewById(R.id.volume)
 
         timeText = findViewById(R.id.timeText)
 
@@ -71,6 +83,7 @@ class EcouterChanson : AppCompatActivity() {
         backSongButton.setOnClickListener(ec)
         back10Button.setOnClickListener(ec)
         credits.setOnClickListener(ec)
+        volume.setOnClickListener(ec)
 
         position = intent.getIntExtra("chansonChoisi", 0)
 
@@ -87,6 +100,12 @@ class EcouterChanson : AppCompatActivity() {
         vue = findViewById(R.id.vue)
 
         player = ExoPlayer.Builder(this).build()
+
+        lanceur = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            CallBackUtilisateur()
+        )
+
     }
 
     override fun onStart() {
@@ -94,9 +113,10 @@ class EcouterChanson : AppCompatActivity() {
         vue.player = player
         player?.addMediaItem(mediaItem)
         player?.prepare()
+        player?.volume = volumePerm
 
         player?.addListener(object : Player.Listener {
-
+            // LORSQU'UNE NOUVELLE CHANSON COMMENCE
             override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
                     position++
@@ -110,6 +130,7 @@ class EcouterChanson : AppCompatActivity() {
                     player?.addMediaItem(mediaItem)
                     player?.prepare()
                     player?.play()
+                    player?.volume = volumePerm
 
                     Glide.with(this@EcouterChanson)
                         .load(Modele.v[position]["artworkUrl100"].toString())
@@ -144,6 +165,8 @@ class EcouterChanson : AppCompatActivity() {
     {
         override fun onClick(v: View?) {
             if (v == pausePlayButton){
+                // PAUSE / PLAY
+
                 if (pauseBool) {
                     player!!.pause()
                     pauseBool = false
@@ -164,6 +187,8 @@ class EcouterChanson : AppCompatActivity() {
                 }
 
             } else if (v == backSongButton){
+                // RETOURNER A LA CHANSON PRECEDENTE
+
                 position--
                 if (position == 0) {
                     position = Modele.v.size - 1
@@ -175,6 +200,7 @@ class EcouterChanson : AppCompatActivity() {
                 player?.addMediaItem(mediaItem)
                 player?.prepare()
                 player?.play()
+                player?.volume = volumePerm
 
                 Glide.with(this@EcouterChanson)
                     .load(Modele.v[position]["artworkUrl100"].toString())
@@ -192,6 +218,8 @@ class EcouterChanson : AppCompatActivity() {
                 m?.start()
 
             } else if (v == back10Button) {
+                // REVENIR EN ARRIERE DE 10 SECONDES
+
                 seekBar.progress -= 10000
                 seekBar.progress = if (seekBar.progress > 0) seekBar.progress else 0
 
@@ -205,13 +233,16 @@ class EcouterChanson : AppCompatActivity() {
 
 
             } else if (v == skip10Button) {
+                // AVANCER DE 10 SECONDES
+
                 player!!.seekTo(player!!.currentPosition+10000)
                 seekBar.progress = player!!.currentPosition.toInt()
 
                 timeText.text = (player!!.currentPosition / 1000).toString() + " sec"
 
-
             } else if (v == skipSongButton) {
+                // SKIP SONG BUTTON
+
                 position++
                 if (position > Modele.v.size) {
                     position = 0
@@ -223,6 +254,7 @@ class EcouterChanson : AppCompatActivity() {
                 player?.addMediaItem(mediaItem)
                 player?.prepare()
                 player?.play()
+                player?.volume = volumePerm
 
                 Glide.with(this@EcouterChanson)
                     .load(Modele.v[position]["artworkUrl100"].toString())
@@ -240,6 +272,7 @@ class EcouterChanson : AppCompatActivity() {
                 m?.start()
 
             } else if (v!!.id == R.id.credits) {
+                // LORSQUE CREDITS EST CLIQUÉ
                 if (artistNameText.text.toString().lowercase() == "miles nelson") {
                     val i = Intent (Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com/intl-fr/artist/5JU2RF8iLDZB1XQRHOqHys"))
                     startActivity(i)
@@ -249,15 +282,28 @@ class EcouterChanson : AppCompatActivity() {
                 } else if (artistNameText.text.toString().lowercase() == "bbpue") {
                     val i = Intent (Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com/intl-fr/artist/57U4dmjpNdE0CBF1vEOQEj"))
                     startActivity(i)
-                }else {
-                    finish()
                 }
+            } else if (v!!.id == R.id.volume) {
+                val intentVolume = Intent(this@EcouterChanson, VolumeActivity::class.java)
+                Log.d("TAG2", player?.volume.toString())
+                val volumeActuel = player?.volume
+                Log.d("TAG3", player?.volume.toString())
+
+                intentVolume.putExtra("volumeActuel", volumeActuel)
+                lanceur.launch(intentVolume)
             } else {
                 finish()
             }
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+
+    }
+
+    // quand l'app est fermé
     override fun onDestroy() {
         super.onDestroy()
 
@@ -272,6 +318,7 @@ class EcouterChanson : AppCompatActivity() {
     }
 
 
+    // timer qui refresh a chaque 50 ms
     inner class MonTimer(tempsRestant: Long) : CountDownTimer(tempsRestant, 50) {
         override fun onTick(mili: Long) {
             seekBar.progress = (player!!.currentPosition).toInt()
@@ -279,6 +326,19 @@ class EcouterChanson : AppCompatActivity() {
         }
         override fun onFinish() {
             seekBar.progress = 30000
+        }
+    }
+
+    // C'est la que le boomerange reviendra
+    inner class CallBackUtilisateur : ActivityResultCallback<ActivityResult> {
+        override fun onActivityResult(result: ActivityResult) {
+            if (result.resultCode == RESULT_OK) {
+                val intentRetour = result.data
+                // defini le volume par ce qu'on a recu
+                Log.d("recu", intentRetour!!.getFloatExtra("volume", 0f).toString())
+                volumePerm = intentRetour!!.getFloatExtra("volume", 0f)
+                player?.volume = volumePerm
+            }
         }
     }
 }
