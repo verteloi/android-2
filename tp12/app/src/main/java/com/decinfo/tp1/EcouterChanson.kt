@@ -66,7 +66,6 @@ class EcouterChanson : AppCompatActivity() {
         artistNameText = findViewById(R.id.artistNameText)
         credits = findViewById(R.id.credits)
         volume = findViewById(R.id.volume)
-
         timeText = findViewById(R.id.timeText)
 
         pausePlayButton = findViewById(R.id.pausePlayButton)
@@ -90,10 +89,12 @@ class EcouterChanson : AppCompatActivity() {
         mediaItem = MediaItem.fromUri(Modele.v.get(position).get("previewUrl").toString())
         coverUrl = Modele.v.get(position).get("artworkUrl100").toString()
 
+        // afficher l'image de l'album
         Glide.with(this)
             .load(coverUrl)
             .into(songImage)
 
+        // afficher titre + artiste selectionné
         songNameText.text = Modele.v[position]["trackName"].toString()
         artistNameText.text = Modele.v[position]["artistName"].toString()
 
@@ -101,6 +102,7 @@ class EcouterChanson : AppCompatActivity() {
 
         player = ExoPlayer.Builder(this).build()
 
+        // boomerang
         lanceur = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult(),
             CallBackUtilisateur()
@@ -116,6 +118,7 @@ class EcouterChanson : AppCompatActivity() {
         player?.volume = volumePerm
 
         player?.addListener(object : Player.Listener {
+
             // LORSQU'UNE NOUVELLE CHANSON COMMENCE
             override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
@@ -124,6 +127,7 @@ class EcouterChanson : AppCompatActivity() {
                         position = 0
                     }
 
+                    // configurer le player pour la nouvelle chanson
                     player?.stop()
                     player?.clearMediaItems()
                     mediaItem = MediaItem.fromUri(Modele.v[position]["previewUrl"].toString())
@@ -132,6 +136,7 @@ class EcouterChanson : AppCompatActivity() {
                     player?.play()
                     player?.volume = volumePerm
 
+                    // changer l'image pour la nouvelle
                     Glide.with(this@EcouterChanson)
                         .load(Modele.v[position]["artworkUrl100"].toString())
                         .into(songImage)
@@ -140,9 +145,11 @@ class EcouterChanson : AppCompatActivity() {
                     pauseBool = true
                     pausePlayButton.setImageResource(R.drawable.pause)
 
+                    // afficher titre + artiste de la nouvelle chanson
                     songNameText.text = Modele.v[position]["trackName"].toString()
                     artistNameText.text = Modele.v[position]["artistName"].toString()
 
+                    // créer un nouveau timer
                     m?.cancel()
                     seekBar.progress = 0
                     m = MonTimer(30000)
@@ -165,9 +172,8 @@ class EcouterChanson : AppCompatActivity() {
     {
         override fun onClick(v: View?) {
             if (v == pausePlayButton){
-                // PAUSE / PLAY
-
                 if (pauseBool) {
+                    // PAUSE CLIQUÉ
                     player!!.pause()
                     pauseBool = false
 
@@ -176,6 +182,7 @@ class EcouterChanson : AppCompatActivity() {
                     pausePlayButton.setImageResource(R.drawable.play)
                 }
                 else {
+                    // PLAY CLIQUÉ
                     player?.play()
                     pauseBool = true
 
@@ -200,8 +207,8 @@ class EcouterChanson : AppCompatActivity() {
                 player?.addMediaItem(mediaItem)
                 player?.prepare()
                 player?.play()
-                player?.volume = volumePerm
 
+                // changer cover image
                 Glide.with(this@EcouterChanson)
                     .load(Modele.v[position]["artworkUrl100"].toString())
                     .into(songImage)
@@ -254,8 +261,8 @@ class EcouterChanson : AppCompatActivity() {
                 player?.addMediaItem(mediaItem)
                 player?.prepare()
                 player?.play()
-                player?.volume = volumePerm
 
+                // changer cover image
                 Glide.with(this@EcouterChanson)
                     .load(Modele.v[position]["artworkUrl100"].toString())
                     .into(songImage)
@@ -273,6 +280,7 @@ class EcouterChanson : AppCompatActivity() {
 
             } else if (v!!.id == R.id.credits) {
                 // LORSQUE CREDITS EST CLIQUÉ
+
                 if (artistNameText.text.toString().lowercase() == "miles nelson") {
                     val i = Intent (Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com/intl-fr/artist/5JU2RF8iLDZB1XQRHOqHys"))
                     startActivity(i)
@@ -284,6 +292,8 @@ class EcouterChanson : AppCompatActivity() {
                     startActivity(i)
                 }
             } else if (v!!.id == R.id.volume) {
+                // LORSQUE LE TEXTE VOLUME EST CLIQUÉ
+
                 val intentVolume = Intent(this@EcouterChanson, VolumeActivity::class.java)
                 Log.d("TAG2", player?.volume.toString())
                 val volumeActuel = player?.volume
@@ -291,8 +301,6 @@ class EcouterChanson : AppCompatActivity() {
 
                 intentVolume.putExtra("volumeActuel", volumeActuel)
                 lanceur.launch(intentVolume)
-            } else {
-                finish()
             }
         }
     }
@@ -318,7 +326,7 @@ class EcouterChanson : AppCompatActivity() {
     }
 
 
-    // timer qui refresh a chaque 50 ms
+    // timer utilisé pour refresh seekbar + texte secondes
     inner class MonTimer(tempsRestant: Long) : CountDownTimer(tempsRestant, 50) {
         override fun onTick(mili: Long) {
             seekBar.progress = (player!!.currentPosition).toInt()
@@ -329,7 +337,7 @@ class EcouterChanson : AppCompatActivity() {
         }
     }
 
-    // C'est la que le boomerange reviendra
+    // C'est la que le boomerang reviendra
     inner class CallBackUtilisateur : ActivityResultCallback<ActivityResult> {
         override fun onActivityResult(result: ActivityResult) {
             if (result.resultCode == RESULT_OK) {

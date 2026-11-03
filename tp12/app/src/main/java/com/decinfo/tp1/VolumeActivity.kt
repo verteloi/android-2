@@ -23,22 +23,21 @@ class VolumeActivity : AppCompatActivity() {
             insets
         }
 
-        val volumeDeBase = intent.getFloatExtra("volumeActuel", 1.0f)
-
         boutonRetour = findViewById(R.id.boutonRetour)
+
+        // le volume actuel
+        val volumeDeBase = intent.getFloatExtra("volumeActuel", 1.0f)
 
         volumeSeekbar = findViewById(R.id.volumeSeekbar)
         volumeSeekbar.max = 100
         volumeSeekbar.progress = (volumeDeBase * 100).toInt()
 
-        Log.e("ENVOYE", volumeDeBase.toString())
-        Log.e("ENVOYE", volumeDeBase.toString())
-        Log.e("ENVOYE", volumeDeBase.toString())
-
-
+        // Retourne a l'activité precedente quand bouton cliqué
         boutonRetour.setOnClickListener {
             val retour = Intent() // intent de retour
             val volumeConverti = volumeSeekbar.progress / 100f
+
+            // retourne le volume selectionné par l'utilisateur
             retour.putExtra("volume", volumeConverti)
             setResult(RESULT_OK, retour)
             finish()

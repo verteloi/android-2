@@ -56,6 +56,8 @@ object Modele {
 
             v.add(temp)
         }
+
+        // appel observateur une fois que la liste est prete
         observateur.listePrete()
     }
 }

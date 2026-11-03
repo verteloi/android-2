@@ -23,15 +23,23 @@ class ListeChansonsAffichage : AppCompatActivity(), Observateur {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        liste = findViewById(R.id.listeChansons)
+
         val choix = intent.getIntExtra("choix", 0)
 
+        // crée singleton Modele
         Modele.getListeChansons(this, this, choix)
-        liste = findViewById(R.id.listeChansons)
     }
 
+    // executer lorsque l'observateur envoie le signal
     override fun listePrete() {
+        
+        // affiche les elements avec images dans listview
         val adapteur = BetterSimpleAdapter(this, Modele.v, R.layout.un_item, arrayOf("trackName", "artistName", "artworkUrl100"), intArrayOf(R.id.trackName, R.id.artistName,R.id.artworkUrl100))
         liste.adapter = adapteur
+
+        // executé lorsque utilisateur clique sur element du listview
         liste.setOnItemClickListener{_,_,position,_ ->
             val i = Intent(this@ListeChansonsAffichage, EcouterChanson::class.java)
             i.putExtra("chansonChoisi", position)

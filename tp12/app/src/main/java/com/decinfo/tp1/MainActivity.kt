@@ -1,6 +1,7 @@
 package com.decinfo.tp1
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -13,6 +14,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var bouton1: Button
     lateinit var bouton2: Button
     lateinit var bouton3: Button
+    var serialisation: Serialisation? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,26 +35,49 @@ class MainActivity : AppCompatActivity() {
         bouton1.setOnClickListener(ec)
         bouton2.setOnClickListener(ec)
         bouton3.setOnClickListener(ec)
+
+        // en cas d'avoir tourner le telephone
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            serialisation = savedInstanceState?.getSerializable("choix", Serialisation::class.java)
+        } else {
+            serialisation = savedInstanceState?.getSerializable("choix") as Serialisation?
+        }
+
+
+        if (serialisation != null) {
+            val i = Intent(this, ListeChansonsAffichage::class.java)
+            i.putExtra("choix", serialisation!!.choix)
+            startActivity(i)
+        }
     }
+
+    // juste avant l'application se ferme il va aller sauvegarder choix
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putSerializable("choix", serialisation)
+    }
+
     inner class Ecouteur : View.OnClickListener
     {
+        // affiche activité ListeChansonsAffichage lorsque bouton cliqué
         override fun onClick(v: View?) {
+            val i = Intent(this@MainActivity, ListeChansonsAffichage::class.java)
+
+            // Envoie le choix de l'utilisateur
             if (v == bouton1){
-                val i = Intent(this@MainActivity, ListeChansonsAffichage::class.java)
+                serialisation = Serialisation(1)
                 i.putExtra("choix", 1)
-                startActivity(i)
+
             } else if (v == bouton2){
-                val i = Intent(this@MainActivity, ListeChansonsAffichage::class.java)
+                serialisation = Serialisation(2)
                 i.putExtra("choix", 2)
-                startActivity(i)
+
             } else if (v == bouton3){
-                val i = Intent(this@MainActivity, ListeChansonsAffichage::class.java)
+                serialisation = Serialisation(3)
                 i.putExtra("choix", 3)
-                startActivity(i)
             }
-            else {
-                finish()
-            }
+
+            startActivity(i)
         }
     }
 }
