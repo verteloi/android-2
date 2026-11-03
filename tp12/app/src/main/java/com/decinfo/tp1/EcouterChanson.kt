@@ -29,6 +29,7 @@ class EcouterChanson : AppCompatActivity() {
     lateinit var back10Button: ImageView
     lateinit var songNameText: TextView
     lateinit var artistNameText: TextView
+    lateinit var timeText: TextView
     lateinit var backSongButton: ImageView
     var position:  Int = 0
     lateinit var seekBar: SeekBar
@@ -49,6 +50,8 @@ class EcouterChanson : AppCompatActivity() {
         seekBar = findViewById(R.id.seekBar)
         songNameText = findViewById(R.id.songNameText)
         artistNameText = findViewById(R.id.artistNameText)
+
+        timeText = findViewById(R.id.timeText)
 
         pausePlayButton = findViewById(R.id.pausePlayButton)
         skip10Button = findViewById(R.id.skip10Button)
@@ -196,9 +199,15 @@ class EcouterChanson : AppCompatActivity() {
                     player!!.seekTo(player!!.currentPosition-10000)
                 }
 
+                timeText.text = (player!!.currentPosition / 1000).toString() + " sec"
+
+
             } else if (v == skip10Button) {
                 player!!.seekTo(player!!.currentPosition+10000)
                 seekBar.progress = player!!.currentPosition.toInt()
+
+                timeText.text = (player!!.currentPosition / 1000).toString() + " sec"
+
 
             } else if (v == skipSongButton) {
                 position++
@@ -227,15 +236,26 @@ class EcouterChanson : AppCompatActivity() {
                 seekBar.progress = 0
                 m = MonTimer(30000)
                 m?.start()
+
             } else {
                 finish()
             }
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        player?.stop()
+        player?.release()
+        player = null
+    }
+
+
     inner class MonTimer(tempsRestant: Long) : CountDownTimer(tempsRestant, 50) {
         override fun onTick(mili: Long) {
             seekBar.progress = (player!!.currentPosition).toInt()
+            timeText.text = (player!!.currentPosition / 1000).toString() + " sec"
         }
         override fun onFinish() {
             seekBar.progress = 30000
