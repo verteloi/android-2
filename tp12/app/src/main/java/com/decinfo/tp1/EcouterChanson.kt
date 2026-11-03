@@ -1,5 +1,7 @@
 package com.decinfo.tp1
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
@@ -30,6 +32,7 @@ class EcouterChanson : AppCompatActivity() {
     lateinit var songNameText: TextView
     lateinit var artistNameText: TextView
     lateinit var timeText: TextView
+    lateinit var credits: TextView
     lateinit var backSongButton: ImageView
     var position:  Int = 0
     lateinit var seekBar: SeekBar
@@ -50,6 +53,7 @@ class EcouterChanson : AppCompatActivity() {
         seekBar = findViewById(R.id.seekBar)
         songNameText = findViewById(R.id.songNameText)
         artistNameText = findViewById(R.id.artistNameText)
+        credits = findViewById(R.id.credits)
 
         timeText = findViewById(R.id.timeText)
 
@@ -66,6 +70,7 @@ class EcouterChanson : AppCompatActivity() {
         skipSongButton.setOnClickListener(ec)
         backSongButton.setOnClickListener(ec)
         back10Button.setOnClickListener(ec)
+        credits.setOnClickListener(ec)
 
         position = intent.getIntExtra("chansonChoisi", 0)
 
@@ -91,9 +96,6 @@ class EcouterChanson : AppCompatActivity() {
         player?.prepare()
 
         player?.addListener(object : Player.Listener {
-            override fun onMediaItemTransition(mediaItem: MediaItem?, @Player.MediaItemTransitionReason reason: Int) {
-
-            }
 
             override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
@@ -237,6 +239,19 @@ class EcouterChanson : AppCompatActivity() {
                 m = MonTimer(30000)
                 m?.start()
 
+            } else if (v!!.id == R.id.credits) {
+                if (artistNameText.text.toString().lowercase() == "miles nelson") {
+                    val i = Intent (Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com/intl-fr/artist/5JU2RF8iLDZB1XQRHOqHys"))
+                    startActivity(i)
+                } else if (artistNameText.text.toString().lowercase() == "meltawaylikematter") {
+                    val i = Intent (Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com/intl-fr/artist/6QaU8JPCMU6ezFnZryTUsK"))
+                    startActivity(i)
+                } else if (artistNameText.text.toString().lowercase() == "bbpue") {
+                    val i = Intent (Intent.ACTION_VIEW, Uri.parse("https://open.spotify.com/intl-fr/artist/57U4dmjpNdE0CBF1vEOQEj"))
+                    startActivity(i)
+                }else {
+                    finish()
+                }
             } else {
                 finish()
             }
@@ -246,6 +261,11 @@ class EcouterChanson : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
+        // stop le timer
+        m?.cancel()
+        m = null
+
+        // stop la lecture de la musique
         player?.stop()
         player?.release()
         player = null
