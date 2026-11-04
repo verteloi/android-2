@@ -39,10 +39,26 @@ class ListeChansonsAffichage : AppCompatActivity(), Observateur {
         val adapteur = BetterSimpleAdapter(this, Modele.v, R.layout.un_item, arrayOf("trackName", "artistName", "artworkUrl100"), intArrayOf(R.id.trackName, R.id.artistName,R.id.artworkUrl100))
         liste.adapter = adapteur
 
+        val positionRestauree = intent.getIntExtra("positionRestauree", -1)
+        val tempsRestaure = intent.getLongExtra("tempsRestaure", -1L)
+        val choix = intent.getIntExtra("choix", 0)
+
+        // si on vient de la sauvegarde de MainActivity
+        if (positionRestauree != -1) {
+            val i = Intent(this@ListeChansonsAffichage, EcouterChanson::class.java)
+            i.putExtra("chansonChoisi", positionRestauree)
+            i.putExtra("choix", choix)
+            i.putExtra("tempsRestaure", tempsRestaure)
+            startActivity(i)
+
+            intent.removeExtra("positionRestauree")
+        }
+
         // executé lorsque utilisateur clique sur element du listview
         liste.setOnItemClickListener{_,_,position,_ ->
             val i = Intent(this@ListeChansonsAffichage, EcouterChanson::class.java)
             i.putExtra("chansonChoisi", position)
+            i.putExtra("choix", choix)
             startActivity(i)
         }
     }

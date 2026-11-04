@@ -3,6 +3,8 @@ package com.decinfo.tp1
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -48,7 +50,8 @@ class EcouterChanson : AppCompatActivity() {
     var m: MonTimer? = null
     lateinit var lanceur: ActivityResultLauncher<Intent>
     var volumePerm: Float = 0.5f
-
+    var choixArtiste: Int = 0
+    var tempsDeReprise: Long = -1L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +62,11 @@ class EcouterChanson : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        // recup infos
+        position = intent.getIntExtra("chansonChoisi", 0)
+        choixArtiste = intent.getIntExtra("choix", 0)
+        tempsDeReprise = intent.getLongExtra("tempsRestaure", -1L)
 
         songImage = findViewById(R.id.songImage)
         seekBar = findViewById(R.id.seekBar)
@@ -116,6 +124,13 @@ class EcouterChanson : AppCompatActivity() {
         player?.addMediaItem(mediaItem)
         player?.prepare()
         player?.volume = volumePerm
+
+        if (tempsDeReprise > 0L) {
+            player?.seekTo(tempsDeReprise)
+            seekBar.progress = tempsDeReprise.toInt()
+            timeText.text = (tempsDeReprise / 1000).toString() + " sec"
+            tempsDeReprise = -1L
+        }
 
         player?.addListener(object : Player.Listener {
 
@@ -308,7 +323,18 @@ class EcouterChanson : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 
+        // serializer a la fermeture de l'app
+        try {
+            val fos: FileOutputStream = this.openFileOutput("sauvegarde.ser", MODE_PRIVATE)
+            val oos = ObjectOutputStream(fos)
+            val tempsActuel = player?.currentPosition ?: 0L
 
+            oos.use {
+                it.writeObject(Serialisation(choixArtiste, position, tempsActuel))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     // quand l'app est fermé
